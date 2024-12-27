@@ -4,20 +4,125 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload File</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #4CAF50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    input[type="file"] {
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: border 0.3s ease;
+    }
+
+    input[type="file"]:hover {
+      border-color: #4CAF50;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .loader {
+      display: none;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #4CAF50;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .message {
+      text-align: center;
+      font-size: 16px;
+      color: #4CAF50;
+      display: none;
+      margin-top: 20px;
+    }
+
+    .error {
+      color: #f44336;
+    }
+
+  </style>
 </head>
 <body>
-  <h1>Upload Your File</h1>
-  <form id="user-form" method="POST" enctype="multipart/form-data">
-    <label for="file">Select a JSON or CSV file:</label>
-    <input type="file" id="file" name="file" accept=".json, .csv" required>
-    <br>
-    <button type="submit">Upload</button>
-  </form>
+  <div class="container">
+    <h1>Upload Your File</h1>
+    <form id="user-form" method="POST" enctype="multipart/form-data">
+      <label for="file">Select a JSON or CSV file:</label>
+      <input type="file" id="file" name="file" accept=".json, .csv" required>
+      <button type="submit">Upload</button>
+    </form>
+    <div class="loader" id="loader"></div>
+    <div class="message" id="message"></div>
+  </div>
 
   <script>
     document.getElementById('user-form').onsubmit = async function (event) {
       event.preventDefault();
-      
+
       // Get the selected file from the form
       const fileInput = document.getElementById('file');
       const file = fileInput.files[0];
@@ -26,6 +131,10 @@
         alert('Please select a file to upload');
         return;
       }
+
+      // Show loading spinner and disable the button
+      document.getElementById('loader').style.display = 'block';
+      document.querySelector('button').disabled = true;
 
       // Prepare the FormData to send the file
       const formData = new FormData();
@@ -37,11 +146,20 @@
         body: formData,
       });
 
+      // Hide loading spinner and enable the button
+      document.getElementById('loader').style.display = 'none';
+      document.querySelector('button').disabled = false;
+
+      const messageElement = document.getElementById('message');
+
       if (response.ok) {
-        alert('File uploaded successfully!');
+        messageElement.textContent = 'File uploaded successfully!';
+        messageElement.className = 'message';
       } else {
-        alert('Failed to upload file.');
+        messageElement.textContent = 'Failed to upload file. Please try again.';
+        messageElement.className = 'message error';
       }
+      messageElement.style.display = 'block';
     };
   </script>
 </body>
