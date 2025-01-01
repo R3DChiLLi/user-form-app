@@ -43,7 +43,8 @@
       font-weight: bold;
     }
 
-    input[type="file"] {
+    input[type="file"],
+    input[type="email"] {
       padding: 10px;
       border: 2px solid #ddd;
       border-radius: 5px;
@@ -52,7 +53,8 @@
       transition: border 0.3s ease;
     }
 
-    input[type="file"]:hover {
+    input[type="file"]:hover,
+    input[type="email"]:hover {
       border-color: #4CAF50;
     }
 
@@ -111,8 +113,12 @@
   <div class="container">
     <h1>Upload Your File</h1>
     <form id="user-form" method="POST" enctype="multipart/form-data">
+      <label for="email">Enter Your Email:</label>
+      <input type="email" id="email" name="email" required placeholder="Enter your email address">
+      
       <label for="file">Select a JSON or CSV file:</label>
       <input type="file" id="file" name="file" accept=".json, .csv" required>
+      
       <button type="submit">Upload</button>
     </form>
     <div class="loader" id="loader"></div>
@@ -123,35 +129,33 @@
     document.getElementById('user-form').onsubmit = async function (event) {
       event.preventDefault();
 
-      // Get the selected file from the form
       const fileInput = document.getElementById('file');
+      const emailInput = document.getElementById('email');
       const file = fileInput.files[0];
+      const email = emailInput.value;
 
-      if (!file) {
-        alert('Please select a file to upload');
+      if (!file || !email) {
+        alert('Please provide both file and email address.');
         return;
       }
 
-      // Show loading spinner and disable the button
       document.getElementById('loader').style.display = 'block';
       document.querySelector('button').disabled = true;
 
-      // Prepare the FormData to send the file
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('email', email);
 
-      // Update the URL with the correct backend URL if necessary
       const response = await fetch('http://3.220.109.155:3000/upload', {
         method: 'POST',
         body: formData,
       });
 
-      // Hide loading spinner and enable the button
       document.getElementById('loader').style.display = 'none';
       document.querySelector('button').disabled = false;
 
       const messageElement = document.getElementById('message');
-
+      
       if (response.ok) {
         messageElement.textContent = 'File uploaded successfully!';
         messageElement.className = 'message';
