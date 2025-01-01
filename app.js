@@ -9,34 +9,57 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Initialize AWS S3
+// Initialize AWS SES and S3
 const s3 = new AWS.S3();
+const ses = new AWS.SES({ region: 'us-east-1' });
 
 // Set up multer storage configuration
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-app.post('/upload', upload.single('file'), (req, res) => {
+app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
-  
+  const userEmail = req.body.email; // Retrieve the email
+
   if (!file) {
     return res.status(400).send('No file uploaded.');
   }
 
   const params = {
     Bucket: 'project-bucket-for-json-file',
-    Key: `data/${Date.now()}_${file.originalname}`, // Generate unique key for the file
+    Key: `data/${Date.now()}_${file.originalname}`,
     Body: file.buffer,
     ContentType: file.mimetype,
   };
 
-  s3.putObject(params, (err, data) => {
-    if (err) {
-      return res.status(500).send('Error uploading file');
-    } else {
-      return res.status(200).send('File uploaded successfully');
-    }
-  });
+  try {
+    // Upload file to S3
+    await s3.putObject(params).promise();
+
+    // Send an email using AWS SES
+    const emailParams = {
+      Destination: {
+        ToAddresses: [userEmail],
+      },
+      Message: {
+        Body: {
+          Text: {
+            Data: `Hello, your file has been successfully uploaded. Filename: ${file.originalname}`,
+          },
+        },
+        Subject: {
+          Data: 'File Upload Successful',
+        },
+      },
+      Source: 'your-email@example.com', // Replace with your SES verified email
+    };
+
+    await ses.sendEmail(emailParams).promise();
+    return res.status(200).send('File uploaded successfully and email sent.');
+  } catch (error) {
+    console.error('Error uploading file or sending email:', error);
+    return res.status(500).send('Error uploading file or sending email.');
+  }
 });
 
 app.listen(PORT, () => {
