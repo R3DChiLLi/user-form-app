@@ -51,7 +51,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
           Data: 'File Upload Successful',
         },
       },
-      Source: 'your-email@example.com', // Replace with your SES verified email
+      Source: 'zahan.khurram@systemsltd.com', // Replace with your SES verified email
     };
 
     await ses.sendEmail(emailParams).promise();
