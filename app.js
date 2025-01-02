@@ -18,9 +18,14 @@ const upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('file'), (req, res) => {
   const file = req.file;
-  
+  const email = req.body.email; // Get the email from the form
+
   if (!file) {
     return res.status(400).send('No file uploaded.');
+  }
+
+  if (!email) {
+    return res.status(400).send('Email address is required.');
   }
 
   const params = {
@@ -28,13 +33,14 @@ app.post('/upload', upload.single('file'), (req, res) => {
     Key: `data/${Date.now()}_${file.originalname}`, // Generate unique key for the file
     Body: file.buffer,
     ContentType: file.mimetype,
+    Tagging: `email=${email}`, // Add email as a tag
   };
 
   s3.putObject(params, (err, data) => {
     if (err) {
       return res.status(500).send('Error uploading file');
     } else {
-      return res.status(200).send('File uploaded successfully');
+      return res.status(200).send('File uploaded successfully with email tag');
     }
   });
 });
