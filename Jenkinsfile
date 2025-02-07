@@ -16,6 +16,8 @@ pipeline {
 
                         cd user-form-app/
 
+                        chmod 777 change-pub-ip.sh
+                        ./change-pub-ip.sh
 
                         image_name="my-app-image"
                         image_tag="latest"

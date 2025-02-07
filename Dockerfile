@@ -9,12 +9,6 @@ WORKDIR /app
 
 COPY index.html .
 
-# Copy the setup script
-COPY change-pub-ip.sh /change-pub-ip.sh
-
-# Give execute permission and run the script
-RUN chmod +x /change-pub-ip.sh && /change-pub-ip.sh
-
 # Install Node.js, npm, and Apache
 RUN apt-get update && apt-get install -y \
     nodejs \
