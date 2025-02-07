@@ -19,6 +19,7 @@ RUN chmod +x /change-pub-ip.sh && /change-pub-ip.sh
 RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
+    curl \
     apache2 \
     && rm -rf /var/lib/apt/lists/*
 
