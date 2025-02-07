@@ -5,7 +5,7 @@ pipeline {
         stage('SSH to Remote Server') {
             steps {
                 // Use the SSH agent with the correct credentials
-                sshagent(['ec2-ssh-key']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
+                sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
                     // Run SSH command and execute your desired task, then exit
                     sh 'ssh -tt -o StrictHostKeyChecking=no ec2-user@54.227.98.219 "echo Hello, from Jenkins!; exit"'
                 }
