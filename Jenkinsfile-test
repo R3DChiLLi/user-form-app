@@ -1,0 +1,184 @@
+pipeline {
+    agent any  // This defines that the pipeline can run on any available agent
+
+    stages {
+        stage('SSH to Remote Server') {
+            steps {
+                // Use the SSH agent with the correct credentials
+                sshagent(['ec2-ssh-key']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
+                    // Run SSH command and execute your desired task, then exit
+                    sh 'ssh -tt -o StrictHostKeyChecking=no ec2-user@54.227.98.219 "echo Hello, from Jenkins!; exit"'
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+//         stage('Build') {
+//             agent {
+//                 docker {
+//                     image 'node:18-alpine'
+//                     reuseNode true
+//                 }
+//             }
+//             steps {
+//                 sh '''
+//                 ls -la
+//                 node --version
+//                 npm --version
+//                 npm ci
+//                 npm run build
+//                 ls -la
+//                 '''
+//             }
+//         }
+
+//         // stage("Building Docker Image") {
+//         //     agent {
+//         //         docker {
+//         //             image 'my-aws-cli'
+//         //             reuseNode true
+//         //             args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint='' --network=host"
+//         //         }
+//         //     }            
+//         //     steps {
+//         //         sh '''
+//         //         docker build -t ${AWS_ECR_REPOSITORY}/${APP_NAME}:${REACT_APP_VERSION} .
+//         //         aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ECR_REPOSITORY}
+//         //         docker push ${AWS_ECR_REPOSITORY}/${APP_NAME}:${REACT_APP_VERSION}
+//         //         '''
+//         //     }
+//         // }
+
+//         // stage("Deploy to AWS") {
+//         //     agent {
+//         //         docker {
+//         //             image 'my-aws-cli'
+//         //             reuseNode true
+//         //             args "--rm --entrypoint='' --network=host"
+//         //         }
+//         //     }
+//         //     steps {
+//         //         sh '''
+//         //         sed -i "s/#APP_VERSION#/$REACT_APP_VERSION/g" aws/task-definition-Prod.json
+//         //         REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-Prod.json | jq '.taskDefinition.revision')
+//         //         aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --task-definition ${TASK_DEFINITION}:$REVISION_VALUE
+//         //         aws ecs wait services-stable --cluster Jenkins-App-Prod --services Jenkins-App-Service-Prod
+//         //         '''
+//         //     }
+//         // }
+
+//         // stage('SonarQube Analysis') {
+//         //     agent {
+//         //         docker {
+//         //             image 'sonarsource/sonar-scanner-cli'
+//         //             reuseNode true
+//         //         }
+//         //     }
+//         //     environment {
+//         //         SONAR_HOST_URL = 'http://34.229.134.34:9000'
+//         //         SONAR_TOKEN = credentials('sonarqube-creds')
+//         //     }
+//         //     steps {
+//         //         sh '''
+//         //         sonar-scanner \
+//         //         -Dsonar.projectKey=my-project \
+//         //         -Dsonar.sources=. \
+//         //         -Dsonar.host.url=$SONAR_HOST_URL \
+//         //         -Dsonar.login=$SONAR_TOKEN
+//         //         '''
+//         //     }
+//         // }
+
+
+
+//         stage('Unit Tests') {
+//             agent {
+//                 docker {
+//                     image 'node:18-alpine'
+//                     reuseNode true
+//                 }
+//             }
+//             steps {
+//                 sh '''
+//                 echo "Testing Stage"
+//                 echo "$(pwd)"
+//                 test -f build/index.html
+//                 ls -l
+//                 npm test
+//                 '''
+//             }
+//             post {
+//                 always {
+//                     junit 'jest-results/junit.xml'
+//                 }
+//             }
+//         }
+
+
+// // // Testing on Staging Env and Deploying To Staging Env
+// //         stage('Staging testing and Deploying') {
+// //             agent {
+// //                 docker {
+// //                     image 'my-playwright'
+// //                     reuseNode true
+// //                 }
+// //             }
+// //             environment {
+// //                 CI_ENVIRONMENT_URL = 'STAGING_URL_TO_BE_SET'
+// //             }
+// //             steps {
+// //                 sh '''
+// //                 netlify --version
+// //                 echo "Deploying to Staging Env... Site-ID: $NETLIFY_SITE_ID"
+// //                 netlify deploy --dir=build --json > deploy-output.json
+// //                 CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' deploy-output.json)
+// //                 npx playwright test --reporter=html
+// //                 '''
+// //             }
+// //             post {
+// //                 always {
+// //                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+// //                 }
+// //             }
+// //         }
+
+
+// // // Prod Environment Testing And Deploying
+// //         stage('Prod Test And Deploy') {
+// //             agent {
+// //                 docker {
+// //                     image 'my-playwright'
+// //                     reuseNode true
+// //                 }
+// //             }
+// //             environment {
+// //                 CI_ENVIRONMENT_URL = 'https://dulcet-banoffee-7a5dcc.netlify.app'
+// //             }
+// //             steps {
+// //                 sh '''
+// //                 node --version
+// //                 netlify --version
+// //                 echo "Deploying to Production... Site-ID: $NETLIFY_SITE_ID"
+// //                 netlify deploy --dir=build --prod
+// //                 npx playwright test --reporter=html
+// //                 '''
+// //             }
+// //             post {
+// //                 always {
+// //                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Prod E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+// //                 }
+// //             }
+// //         }
+
+//     }
+// }
