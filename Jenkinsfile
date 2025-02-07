@@ -20,8 +20,7 @@ pipeline {
                         image_name="my-app-image"
                         image_tag="latest"
                         container_name="user-form-app-containerized"
-
-
+                    
                         if [ $(docker images -q ${image_name}:${image_tag}) ]; then
                             echo "Image ${image_name}:${image_tag} already exists. Removing it..."
                             docker stop ${container_name} && docker rm ${container_name}
@@ -41,6 +40,8 @@ pipeline {
                             docker stop ${container_name} && docker rm ${container_name}
                             sleep 10
                             echo "Starting New Updated Container"
+                            docker run --name user-form-app-containerized -d -p 80:80 -p 3000:3000 my-app-image
+                        else
                             docker run --name user-form-app-containerized -d -p 80:80 -p 3000:3000 my-app-image
                         fi
                         exit
