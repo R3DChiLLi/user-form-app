@@ -24,7 +24,7 @@ pipeline {
                         if [ $(docker images -q ${image_name}:${image_tag}) ]; then
                             echo "Image ${image_name}:${image_tag} already exists. Removing it..."
                             docker stop ${container_name} && docker rm ${container_name}
-                            docker rmi -f ${image_name}:${image_tag}
+                            docker system prune -a -f
                         else
                             echo "Image ${image_name}:${image_tag} does not exist."
                         fi
