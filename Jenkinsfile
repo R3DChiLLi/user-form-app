@@ -6,7 +6,7 @@ pipeline {
             steps {
                 sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
                     // Use echo and bash to run multiple commands
-                    sh '''ssh -q -tt -o StrictHostKeyChecking=no ec2-user@54.227.98.219 << 'EOF'
+                    sh '''ssh -q -tt -o StrictHostKeyChecking=no ec2-user@3.92.192.114 << 'EOF'
                         echo "Hello, from Target EC2!"
                         if [ ! -d "user-form-app" ]; then
                         git clone -q https://github.com/R3DChiLLi/user-form-app.git
