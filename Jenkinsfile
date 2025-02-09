@@ -1,3 +1,15 @@
+def updateGitRepo() {
+    return '''
+    if [ ! -d "user-form-app" ]; then
+        git clone -q https://github.com/R3DChiLLi/user-form-app.git
+    else
+        cd user-form-app && git pull
+    fi
+    '''
+}
+
+
+
 pipeline {
     agent any
 
@@ -8,11 +20,8 @@ pipeline {
                     // Use echo and bash to run multiple commands
                     sh '''ssh -q -tt -o StrictHostKeyChecking=no ec2-user@3.92.192.114 << 'EOF'
                         echo "Hello, from Target EC2!"
-                        if [ ! -d "user-form-app" ]; then
-                        git clone -q https://github.com/R3DChiLLi/user-form-app.git
-                        else
-                        cd user-form-app && git pull
-                        fi
+
+                        ${updateGitRepo()}
 
                         cd user-form-app/
 
