@@ -43,6 +43,12 @@ def runContainer() {
     '''
 }
 
+def executeShellScriptForSubstitutingPubIP () {
+    return '''
+    chmod 777 change-pub-ip.sh
+    ./change-pub-ip.sh
+    '''
+}
 
 
 pipeline {
@@ -55,15 +61,10 @@ pipeline {
                     // Use echo and bash to run multiple commands
                     sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@3.92.192.114 << 'EOF'
                         echo "Hello, from Target EC2!"
-
-                        ${updateGitRepo()}
-
-                        chmod 777 change-pub-ip.sh
-                        ./change-pub-ip.sh
-
-
-                        ${buildDockerImage()}
-                        ${runContainer()}
+                        ${updateGitRepo()} >> /tmp/log1.txt
+                        ${executeShellScriptForSubstitutingPubIP ()} >> /tmp/log2.txt
+                        ${buildDockerImage()} >> /tmp/log3.txt
+                        ${runContainer()} >> /tmp/log4.txt
                         exit
                     EOF"""
                 }
