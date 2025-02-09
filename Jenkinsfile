@@ -28,7 +28,7 @@ def buildDockerImage() {
     '''
 }
 
-def runContainer {
+def runContainer() {
     return '''
     container_name="user-form-app-containerized"
     if [ $(docker ps -q -f name=${container_name}) ]; then
