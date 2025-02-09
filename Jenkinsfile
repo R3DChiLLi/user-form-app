@@ -51,22 +51,25 @@ pipeline {
     stages {
         stage('Deploying To EC2 Instance Dockerized') {
             steps {
-                sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
-                    // Use echo and bash to run multiple commands
-                    sh '''ssh -q -tt -o StrictHostKeyChecking=no ec2-user@3.92.192.114 << 'EOF'
-                        echo "Hello, from Target EC2!"
+                script {
+                    sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
+                        // Use echo and bash to run multiple commands
+                        sh '''ssh -q -tt -o StrictHostKeyChecking=no ec2-user@3.92.192.114 << 'EOF'
+                            echo "Hello, from Target EC2!"
 
-                        ${updateGitRepo()}
+                            ${updateGitRepo()}
 
-                        chmod 777 change-pub-ip.sh
-                        ./change-pub-ip.sh
+                            chmod 777 change-pub-ip.sh
+                            ./change-pub-ip.sh
 
 
-                        ${buildDockerImage()}
-                        ${runContainer()}
-                        exit
-                    EOF'''
+                            ${buildDockerImage()}
+                            ${runContainer()}
+                            exit
+                        EOF'''
+                    }
                 }
+
             }
         }
     }
