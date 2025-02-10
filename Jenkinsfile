@@ -77,7 +77,7 @@ pipeline {
             steps {
                 sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
                     // Use echo and bash to run multiple commands
-                    sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@${env.PUB_IP} << EOF
+                    sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@34.234.95.81 << EOF
                         echo "Hello, from Target EC2!"
                         ${updateGitRepo()} >> /tmp/log1.txt
                         ${executeShellScriptForSubstitutingPubIP ()} >> /tmp/log2.txt
