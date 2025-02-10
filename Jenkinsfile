@@ -90,6 +90,14 @@ pipeline {
         }
 
         stage('Checking Stability of CF') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "-u root --rm --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
+            
             steps {
                 sh '''
                 yum install jq -y
