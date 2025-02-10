@@ -66,7 +66,9 @@ pipeline {
             }
             steps {
                 script {
+                sh '''
                 yum install jq -y
+                '''
                 env.PUB_IP=sh(script: "aws cloudformation describe-stacks --stack-name user-form-app-project | jq -r '.Stacks[0].Outputs[0].OutputValue'", returnStdout: true)
                 }
             }
