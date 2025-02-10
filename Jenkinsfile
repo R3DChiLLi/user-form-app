@@ -5,6 +5,7 @@ def updateGitRepo() {
     else
         cd user-form-app && git pull
     fi
+    cd user-form-app
     '''
 }
 
