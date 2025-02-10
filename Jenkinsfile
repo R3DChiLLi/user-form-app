@@ -55,11 +55,26 @@ pipeline {
     agent any
 
     stages {
+        stage ('Get EC2 Public IP addr')
+        {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "-u root --rm --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
+            steps {
+                script {
+                env.PUB_IP=sh(script: "aws cloudformation describe-stacks --stack-name user-form-app-project | jq -r '.Stacks[0].Outputs[0].OutputValue'", returnStdout: true)
+                }
+            }
+        }
         stage('Deploying To EC2 Instance Dockerized') {
             steps {
                 sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
                     // Use echo and bash to run multiple commands
-                    sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@3.92.192.114 << 'EOF'
+                    sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@${env.PUB_IP} << 'EOF'
                         echo "Hello, from Target EC2!"
                         ${updateGitRepo()} >> /tmp/log1.txt
                         ${executeShellScriptForSubstitutingPubIP ()} >> /tmp/log2.txt
