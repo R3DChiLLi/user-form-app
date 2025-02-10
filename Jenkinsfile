@@ -23,7 +23,7 @@ def buildDockerImage() {
     fi
 
     echo "Building the new image ${image_name}:${image_tag}..."
-    docker build -q -t ${image_name} .
+    docker build -t ${image_name} .
     cd user-form-app/
     '''
 }
