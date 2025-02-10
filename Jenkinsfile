@@ -12,6 +12,7 @@
 //     return env.STATUS
 // }
 
+
 def updateGitRepo() {
     return '''
     if [ ! -d "user-form-app" ]; then
@@ -69,6 +70,10 @@ def executeShellScriptForSubstitutingPubIP () {
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+
     stages {
         stage ('Get EC2 Public IP addr')
         {
@@ -97,7 +102,7 @@ pipeline {
                     reuseNode true
                 }
             }
-            
+
             steps {
                 sh '''
                 yum install jq -y
