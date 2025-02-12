@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    networks:
+      - custom_network  # Connect to the custom network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - custom_network  # Connect to the custom network
+
+networks:
+  custom_network:  # Define the custom network
+    driver: bridge  # Use the default bridge driver
