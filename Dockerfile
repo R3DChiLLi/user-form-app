@@ -1,19 +1,15 @@
-# Use Ubuntu as the base image
-FROM ubuntu:latest
+FROM nginx:latest
 
-# Set a non-interactive frontend for apt-get (avoids prompts during install)
+# To avoid prompts during installing packages
 ENV DEBIAN_FRONTEND=noninteractive
-
-WORKDIR /app
-
-COPY index.html .
 
 RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     curl \
-    nginx \
     && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
@@ -26,4 +22,4 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80 3000
 
-CMD service nginx start && node /app/app.js
+CMD service nginx start && nginx -g 'daemon off;' && node /app/app.js
