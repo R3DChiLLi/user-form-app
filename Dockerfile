@@ -22,4 +22,5 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80 3000
 
-CMD service nginx start && nginx -g 'daemon off;' && node /app/app.js
+CMD nginx -g 'daemon off;' & node /app/app.js
+
