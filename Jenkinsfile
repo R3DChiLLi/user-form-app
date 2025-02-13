@@ -103,7 +103,7 @@ pipeline {
 
         stage('Deploying To EC2 Instance Dockerized') {
             steps {
-                sshagent(['ec2-user']) {  // Make sure 'ec2-ssh-key' is your SSH private key stored in Jenkins credentials
+                sshagent(['ec2-user']) {
                     // Use echo and bash to run multiple commands
                     sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@${env.PUB_IP} << 'EOF'
                         echo "Hello, from Target EC2!"
