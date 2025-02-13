@@ -106,41 +106,52 @@
       cursor: not-allowed;
     }
 
-    /* Loader Animation */
-    .loader {
-      display: none;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #00796b;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Success/Error Message */
-    .message {
-      text-align: center;
-      font-size: 16px;
-      display: none;
+    /* Upload History */
+    .history-container {
       margin-top: 20px;
-      padding: 10px;
-      border-radius: 5px;
+      text-align: left;
     }
 
-    .success {
-      background: #e0f2f1;
+    .history-title {
+      font-size: 18px;
+      font-weight: bold;
       color: #00796b;
+      margin-bottom: 10px;
     }
 
-    .error {
-      background: #ffebee;
-      color: #d32f2f;
+    .history-list {
+      list-style-type: none;
+      padding: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+
+    .history-item {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .clear-history {
+      margin-top: 10px;
+      padding: 10px;
+      background: #d32f2f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .clear-history:hover {
+      background: #b71c1c;
     }
 
   </style>
@@ -152,7 +163,7 @@
 
   <div class="container">
     <h1>Upload Your File</h1>
-    <form id="user-form" method="POST" enctype="multipart/form-data">
+    <form id="user-form">
       <label for="email">Enter your email address:</label>
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
@@ -162,8 +173,11 @@
       <button type="submit">Upload</button>
     </form>
 
-    <div class="loader" id="loader"></div>
-    <div class="message" id="message"></div>
+    <div class="history-container">
+      <p class="history-title">Upload History</p>
+      <ul id="history-list" class="history-list"></ul>
+      <button class="clear-history" id="clear-history">Clear History</button>
+    </div>
   </div>
 
   <script>
@@ -185,34 +199,38 @@
         return;
       }
 
-      // Show loader and disable button
-      document.getElementById('loader').style.display = 'block';
-      document.querySelector('button').disabled = true;
-
-      const formData = new FormData();
-      formData.append('email', email);
-      formData.append('file', file);
-
-      const response = await fetch('/upload', {
-        method: 'POST',
-        body: formData,
+      // Save upload history in localStorage
+      const history = JSON.parse(localStorage.getItem('uploadHistory')) || [];
+      history.push({
+        fileName: file.name,
+        email: email,
+        date: new Date().toLocaleString()
       });
 
-      // Hide loader and enable button
-      document.getElementById('loader').style.display = 'none';
-      document.querySelector('button').disabled = false;
-
-      const messageElement = document.getElementById('message');
-
-      if (response.ok) {
-        messageElement.textContent = '✅ File uploaded successfully!';
-        messageElement.className = 'message success';
-      } else {
-        messageElement.textContent = '❌ Failed to upload file. Please try again.';
-        messageElement.className = 'message error';
-      }
-      messageElement.style.display = 'block';
+      localStorage.setItem('uploadHistory', JSON.stringify(history));
+      displayHistory();
     };
+
+    function displayHistory() {
+      const historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+
+      const history = JSON.parse(localStorage.getItem('uploadHistory')) || [];
+      history.forEach(entry => {
+        const li = document.createElement('li');
+        li.classList.add('history-item');
+        li.textContent = `${entry.fileName} - ${entry.email} (${entry.date})`;
+        historyList.appendChild(li);
+      });
+    }
+
+    document.getElementById('clear-history').addEventListener('click', function () {
+      localStorage.removeItem('uploadHistory');
+      displayHistory();
+    });
+
+    // Display history on page load
+    displayHistory();
   </script>
 
 </body>
