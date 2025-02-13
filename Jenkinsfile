@@ -25,8 +25,8 @@ def updateGitRepo() {
 }
 
 def runDockerCompose() {
-    return '''
-    if [ $(docker images -q) ]; then
+    return """
+    if [ "$(docker images -q)" ]; then
         echo "Images already exists. Removing it..."
         docker-compose down
         docker system prune -a -f
@@ -37,7 +37,7 @@ def runDockerCompose() {
     echo "Building the new images..."
     cd user-form-app/
     docker-compose up -d
-    '''
+    """
 }
 
 def executeShellScriptForSubstitutingPubIP () {
