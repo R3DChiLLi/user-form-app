@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload File</title>
   <style>
+    /* General Page Styling */
     body {
       font-family: 'Arial', sans-serif;
-      background-color: #f4f4f9;
+      background: linear-gradient(135deg, #e0f7fa, #80deea);
       color: #333;
       display: flex;
       justify-content: center;
@@ -16,19 +17,20 @@
       margin: 0;
     }
 
+    /* Form Container */
     .container {
-      background-color: white;
-      border-radius: 8px;
+      background: white;
+      border-radius: 10px;
       padding: 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
       width: 100%;
-      max-width: 500px;
+      max-width: 450px;
+      text-align: center;
     }
 
     h1 {
       font-size: 24px;
-      color: #4CAF50;
-      text-align: center;
+      color: #00796b;
       margin-bottom: 20px;
     }
 
@@ -41,46 +43,58 @@
     label {
       font-size: 16px;
       font-weight: bold;
+      text-align: left;
+      display: block;
+      color: #00796b;
     }
 
     input[type="file"], input[type="email"] {
-      padding: 10px;
+      padding: 12px;
       border: 2px solid #ddd;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 16px;
-      cursor: pointer;
-      transition: border 0.3s ease;
+      transition: 0.3s;
+      outline: none;
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    input[type="file"]:hover, input[type="email"]:hover {
-      border-color: #4CAF50;
+    input[type="file"]:hover, input[type="email"]:hover,
+    input[type="file"]:focus, input[type="email"]:focus {
+      border-color: #00796b;
+      box-shadow: 0 0 8px rgba(0, 121, 107, 0.3);
     }
 
+    /* Upload Button */
     button {
-      background-color: #4CAF50;
+      background: #00796b;
       color: white;
       padding: 12px;
       font-size: 16px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: 0.3s;
       width: 100%;
+      margin-top: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
 
     button:hover {
-      background-color: #45a049;
+      background: #004d40;
     }
 
     button:disabled {
-      background-color: #aaa;
+      background: #aaa;
       cursor: not-allowed;
     }
 
+    /* Loader Animation */
     .loader {
       display: none;
       border: 4px solid #f3f3f3;
-      border-top: 4px solid #4CAF50;
+      border-top: 4px solid #00796b;
       border-radius: 50%;
       width: 40px;
       height: 40px;
@@ -93,22 +107,30 @@
       100% { transform: rotate(360deg); }
     }
 
+    /* Success/Error Message */
     .message {
       text-align: center;
       font-size: 16px;
-      color: #4CAF50;
       display: none;
       margin-top: 20px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .success {
+      background: #e0f2f1;
+      color: #00796b;
     }
 
     .error {
-      color: #f44336;
+      background: #ffebee;
+      color: #d32f2f;
     }
 
   </style>
 </head>
 <body>
-  <h1>Testing Jenkins</h1>
+
   <div class="container">
     <h1>Upload Your File</h1>
     <form id="user-form" method="POST" enctype="multipart/form-data">
@@ -120,6 +142,7 @@
 
       <button type="submit">Upload</button>
     </form>
+
     <div class="loader" id="loader"></div>
     <div class="message" id="message"></div>
   </div>
@@ -128,7 +151,6 @@
     document.getElementById('user-form').onsubmit = async function (event) {
       event.preventDefault();
 
-      // Get the selected file and email from the form
       const emailInput = document.getElementById('email');
       const fileInput = document.getElementById('file');
       const email = emailInput.value;
@@ -144,36 +166,35 @@
         return;
       }
 
-      // Show loading spinner and disable the button
+      // Show loader and disable button
       document.getElementById('loader').style.display = 'block';
       document.querySelector('button').disabled = true;
 
-      // Prepare the FormData to send the file and email
       const formData = new FormData();
       formData.append('email', email);
       formData.append('file', file);
 
-      // Update the URL with the correct backend URL if necessary
       const response = await fetch('/upload', {
         method: 'POST',
         body: formData,
       });
 
-      // Hide loading spinner and enable the button
+      // Hide loader and enable button
       document.getElementById('loader').style.display = 'none';
       document.querySelector('button').disabled = false;
 
       const messageElement = document.getElementById('message');
 
       if (response.ok) {
-        messageElement.textContent = 'File uploaded successfully!';
-        messageElement.className = 'message';
+        messageElement.textContent = '✅ File uploaded successfully!';
+        messageElement.className = 'message success';
       } else {
-        messageElement.textContent = 'Failed to upload file. Please try again.';
+        messageElement.textContent = '❌ Failed to upload file. Please try again.';
         messageElement.className = 'message error';
       }
       messageElement.style.display = 'block';
     };
   </script>
+
 </body>
 </html>
