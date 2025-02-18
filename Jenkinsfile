@@ -142,7 +142,7 @@ pipeline {
         //     }
         // }
 
-        stage('Build') {
+        stage('Build The Images And Push to ECR') {
             steps {
                 sh """
                 ${updateGitRepo()}
