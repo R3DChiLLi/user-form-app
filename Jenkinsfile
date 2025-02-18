@@ -27,9 +27,9 @@ def updateGitRepo() {
 def buildBackEndImage() {
     return """
     cd backend
-    docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo-backend:latest .
+    docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:backend .
     aws ecr get-login-password | docker login --username AWS --password-stdin ${env.AWS_ECR_REPOSITORY}
-    docker push 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo-backend:latest
+    docker push 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:backend
     """
 }
 
@@ -37,9 +37,9 @@ def buildBackEndImage() {
 def buildFrontEndImage() {
     return """
     cd ../frontend/
-    docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo-frontend:latest .
+    docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:frontend .
     aws ecr get-login-password | docker login --username AWS --password-stdin ${env.AWS_ECR_REPOSITORY}
-    docker push 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:latest
+    docker push 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:frontend
     """
 }
 
