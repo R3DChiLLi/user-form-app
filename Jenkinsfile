@@ -162,6 +162,13 @@ pipeline {
         // }
 
         stage('Changing Nginx Conf to ecs frontend containers IP') {
+            agent {
+                docker {
+                    image 'my-aws-cli'
+                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
             steps {
                 sh '''
                 cd ../frontend
