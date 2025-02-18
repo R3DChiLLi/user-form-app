@@ -175,7 +175,7 @@ pipeline {
                 TASK_ARN=$(aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${SERVICE_NAME} --query 'taskArns[0]' --output text)
                 ENI_ID=$(aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks $TASK_ARN --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
                 PUBLIC_IP=$(aws ec2 describe-network-interfaces --network-interface-ids $ENI_ID --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-                sed -i "s/###enterALBDNShere###/localhost/g" nginx.conf
+                sed -i "s/###enterALBDNShere###/my-alb-114282096.us-east-1.elb.amazonaws.com/g" nginx.conf
                 '''
             }
         }
