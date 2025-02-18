@@ -92,6 +92,15 @@ pipeline {
         //     }
         // }
 
+        stage('Build Custom Images') {
+            steps {
+                sh """
+                cd custom-images/Dockerfile-aws-cli
+                docker build -t my-aws-cli .
+                """
+            }
+        }
+
         stage('Checking Stability of CF') {
             agent {
                 docker {
@@ -143,6 +152,13 @@ pipeline {
         // }
 
         stage('Build The Images And Push to ECR') {
+            agent {
+                docker {
+                    image 'my-aws-cli'
+                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
             steps {
                 sh """
                 ${updateGitRepo()}
