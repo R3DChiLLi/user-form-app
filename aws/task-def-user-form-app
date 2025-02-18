@@ -2,7 +2,7 @@
     "requiresCompatibilities": [
       "FARGATE"
     ],
-    "family": "user-form-app-taskDefinition",
+    "family": "task-def-user-form-app",
     "taskRoleArn": "arn:aws:iam::205930633177:role/user-form-ecs-task-role",
     "containerDefinitions": [
       {
