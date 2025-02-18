@@ -170,6 +170,7 @@ pipeline {
             steps {
                 sh """
                 ${buildBackEndImage()}
+                ${buildFrontEndImage()}
                 """
             }
         }
