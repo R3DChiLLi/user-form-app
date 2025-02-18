@@ -116,6 +116,13 @@ pipeline {
         }
 
         stage('Get Env Variables') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "-u root --rm --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
             steps {
                 script {
                     sh """
