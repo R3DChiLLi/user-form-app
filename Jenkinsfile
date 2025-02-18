@@ -24,6 +24,14 @@ def updateGitRepo() {
     '''
 }
 
+def buildBackEndImage() {
+    return '''
+    cd backend
+    docker build -t backend-image:latest .
+
+    '''
+}
+
 def runDockerCompose() {
     return '''
     if [ "$(docker images -q)" ]; then
@@ -52,29 +60,36 @@ def executeShellScriptForSubstitutingPubIP () {
 pipeline {
     agent any
 
+    environment {
+        CLUSTER_NAME = 'user-form-app-cluster'
+        SERVICE_NAME = 'Jenkins-App-Service-Prod'
+        TASK_DEFINITION = 'LearnJenkinsApp-TaskDefinition-Prod'
+        APP_NAME = 'myjenkinsapp'
+    }
+
     options {
         disableConcurrentBuilds()
     }
 
     stages {
-        stage ('Get EC2 Public IP addr')
-        {
-            agent {
-                docker {
-                    image 'amazon/aws-cli'
-                    args "-u root --rm --entrypoint='' --network=host"
-                    reuseNode true
-                }
-            }
-            steps {
-                script {
-                sh '''
-                yum install jq -y
-                '''
-                env.PUB_IP=sh(script: "aws cloudformation describe-stacks --stack-name user-form-app-project | jq -r '.Stacks[0].Outputs[0].OutputValue'", returnStdout: true).trim()
-                }
-            }
-        }
+        // stage ('Get EC2 Public IP addr')
+        // {
+        //     agent {
+        //         docker {
+        //             image 'amazon/aws-cli'
+        //             args "-u root --rm --entrypoint='' --network=host"
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //         sh '''
+        //         yum install jq -y
+        //         '''
+        //         env.PUB_IP=sh(script: "aws cloudformation describe-stacks --stack-name user-form-app-project | jq -r '.Stacks[0].Outputs[0].OutputValue'", returnStdout: true).trim()
+        //         }
+        //     }
+        // }
 
         stage('Checking Stability of CF') {
             agent {
@@ -100,20 +115,48 @@ pipeline {
             }
         }
 
-
-        stage('Deploying To EC2 Instance Dockerized') {
+        stage('Get Env Variables') {
             steps {
-                sshagent(['ec2-user']) {
-                    // Use echo and bash to run multiple commands
-                    sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@${env.PUB_IP} << 'EOF'
-                        echo "Hello, from Target EC2!"
-                        ${updateGitRepo()} >> /tmp/log1.txt
-                        ${executeShellScriptForSubstitutingPubIP ()} >> /tmp/log2.txt
-                        ${runDockerCompose()} >> /tmp/log3.txt
-                        exit
-                    EOF"""
+                script {
+                    sh """
+                    yum install jq -y
+                    """
+                    env.AWS_ECR_REPOSITORY = sh(script: "aws ecr describe-repositories | jq -r '.repositories[0].repositoryUri' | cut -d'/' -f1", returnStdout: true)
                 }
             }
         }
+
+        stage('Build') {
+            steps {
+                sh """
+                echo 'repo name is: ${env.AWS_ECR_REPOSITORY}'
+                """
+            }
+        }
+
+        // stage('Build') {
+        //     steps {
+        //         sh """
+        //         ${updateGitRepo()}
+        //         ${buildBackEndImage()}
+        //         """
+        //     }
+        // }
+
+
+        // stage('Deploying To EC2 Instance Dockerized') {
+        //     steps {
+        //         sshagent(['ec2-user']) {
+        //             // Use echo and bash to run multiple commands
+        //             sh """ssh -q -tt -o StrictHostKeyChecking=no ec2-user@${env.PUB_IP} << 'EOF'
+        //                 echo "Hello, from Target EC2!"
+        //                 ${updateGitRepo()} >> /tmp/log1.txt
+        //                 ${executeShellScriptForSubstitutingPubIP ()} >> /tmp/log2.txt
+        //                 ${runDockerCompose()} >> /tmp/log3.txt
+        //                 exit
+        //             EOF"""
+        //         }
+        //     }
+        // }
     }
 }
