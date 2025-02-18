@@ -150,15 +150,6 @@ pipeline {
         //         """
         //     }
         // }
-
-        stage('Update Git Repo') {
-            steps {
-                sh """
-                ${updateGitRepo()}
-                """
-            }
-        }
-
         stage('Build The Images And Push to ECR') {
             agent {
                 docker {
