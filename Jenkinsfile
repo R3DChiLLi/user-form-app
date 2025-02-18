@@ -95,7 +95,7 @@ pipeline {
         stage('Build Custom Images') {
             steps {
                 sh """
-                cd custom-images/Dockerfile-aws-cli
+                cd custom-images
                 docker build -t my-aws-cli .
                 """
             }
