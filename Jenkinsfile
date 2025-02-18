@@ -27,7 +27,7 @@ def updateGitRepo() {
 def buildBackEndImage() {
     return """
     cd backend
-    docker build -t ${env.AWS_ECR_REPOSITORY}/user-form-app-ecr-repo:latest .
+    docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:latest .
     aws ecr get-login-password | docker login --username AWS --password-stdin ${env.AWS_ECR_REPOSITORY}
     docker push ${env.AWS_ECR_REPOSITORY}/user-form-app-ecr-repo:latest
     """
