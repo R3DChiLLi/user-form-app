@@ -160,6 +160,20 @@ pipeline {
         //         """
         //     }
         // }
+
+        stage('Changing Nginx Conf to ecs frontend containers IP') {
+            }
+            steps {
+                sh '''
+                cd ../frontend
+                TASK_ARN=$(aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${SERVICE_NAME} --query 'taskArns[0]' --output text)
+                ENI_ID=$(aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks $TASK_ARN --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
+                PUBLIC_IP=$(aws ec2 describe-network-interfaces --network-interface-ids $ENI_ID --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
+                sed -i "s/###enterALBDNShere###/$PUBLIC_IP/g" nginx.conf
+                '''
+            }
+        }
+
         stage('Build The Images And Push to ECR') {
             agent {
                 docker {
@@ -210,3 +224,15 @@ pipeline {
         // }
     }
 }
+
+
+
+
+aws ec2 describe-network-interfaces \
+  --network-interface-ids $(aws ecs describe-tasks --cluster user-form-app-cluster --tasks $(aws ecs list-tasks --cluster user-form-app-cluster --service-name user-form-service --query 'taskArns[0]' --output text) --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text) \
+  --query 'NetworkInterfaces[0].Association.PublicIp' --output text
+
+        CLUSTER_NAME = 'user-form-app-cluster'
+        SERVICE_NAME = 'user-form-service'
+        TASK_DEFINITION = 'task-def-user-form-app'
+        REPO_NAME = 'user-form-app-ecr-repo'
