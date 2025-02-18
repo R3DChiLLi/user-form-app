@@ -182,7 +182,3 @@ pipeline {
         // }
     }
 }
-
-
-
-docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:latest .
