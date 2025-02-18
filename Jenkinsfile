@@ -59,12 +59,12 @@ def runDockerCompose() {
     '''
 }
 
-def executeShellScriptForSubstitutingPubIP () {
-    return '''
+def executeShellScriptForSubstitutingPubIP() {
+    return """
     cd frontend/
     chmod 700 change-pub-ip.sh
     ./change-pub-ip.sh
-    '''
+    """
 }
 
 
@@ -162,21 +162,10 @@ pipeline {
         // }
 
         stage('Changing Nginx Conf to ecs frontend containers IP') {
-            agent {
-                docker {
-                    image 'my-aws-cli'
-                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint='' --network=host"
-                    reuseNode true
-                }
-            }
             steps {
-                sh '''
-                cd frontend
-                TASK_ARN=$(aws ecs list-tasks --cluster ${CLUSTER_NAME} --service-name ${SERVICE_NAME} --query 'taskArns[0]' --output text)
-                ENI_ID=$(aws ecs describe-tasks --cluster ${CLUSTER_NAME} --tasks $TASK_ARN --query 'tasks[0].attachments[0].details[?name==`networkInterfaceId`].value' --output text)
-                PUBLIC_IP=$(aws ec2 describe-network-interfaces --network-interface-ids $ENI_ID --query 'NetworkInterfaces[0].Association.PublicIp' --output text)
-                sed -i "s/###enterALBDNShere###/my-alb-114282096.us-east-1.elb.amazonaws.com/g" nginx.conf
-                '''
+                sh"""
+                ${executeShellScriptForSubstitutingPubIP()}
+                """
             }
         }
         stage('Build The Images And Push to ECR') {
