@@ -27,9 +27,9 @@ def updateGitRepo() {
 def buildBackEndImage() {
     return """
     cd backend
-    docker build -t ${env.AWS_ECR_REPOSITORY}/${BACKEND_CONTAINER_IMAGE}:latest .
+    docker build -t ${env.AWS_ECR_REPOSITORY}/${REPO_NAME}:latest .
     aws ecr get-login-password | docker login --username AWS --password-stdin ${env.AWS_ECR_REPOSITORY}
-    docker push ${env.AWS_ECR_REPOSITORY}/${BACKEND_CONTAINER_IMAGE}:latest
+    docker push ${env.AWS_ECR_REPOSITORY}/${REPO_NAME}:latest
     """
 }
 
@@ -65,7 +65,7 @@ pipeline {
         CLUSTER_NAME = 'user-form-app-cluster'
         SERVICE_NAME = 'Jenkins-App-Service-Prod'
         TASK_DEFINITION = 'LearnJenkinsApp-TaskDefinition-Prod'
-        BACKEND_CONTAINER_IMAGE = 'backend-img'
+        REPO_NAME = 'user-form-app-ecr-repo'
     }
 
     options {
@@ -182,3 +182,7 @@ pipeline {
         // }
     }
 }
+
+
+
+docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:latest .
