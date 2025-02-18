@@ -162,7 +162,6 @@ pipeline {
         // }
 
         stage('Changing Nginx Conf to ecs frontend containers IP') {
-            }
             steps {
                 sh '''
                 cd ../frontend
@@ -173,7 +172,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Build The Images And Push to ECR') {
             agent {
                 docker {
@@ -222,4 +220,5 @@ pipeline {
         //         }
         //     }
         // }
+    }
 }
