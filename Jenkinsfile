@@ -73,8 +73,8 @@ pipeline {
 
     environment {
         CLUSTER_NAME = 'user-form-app-cluster'
-        SERVICE_NAME = 'Jenkins-App-Service-Prod'
-        TASK_DEFINITION = 'LearnJenkinsApp-TaskDefinition-Prod'
+        SERVICE_NAME = 'user-form-service'
+        TASK_DEFINITION = 'task-def-user-form-app'
         REPO_NAME = 'user-form-app-ecr-repo'
     }
 
@@ -173,6 +173,23 @@ pipeline {
                 ${buildBackEndImage()}
                 ${buildFrontEndImage()}
                 """
+            }
+        }
+
+        stage('Update Task Def and Update Service') {
+            agent {
+                docker {
+                    image 'my-aws-cli'
+                    args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                REVISION_VALUE=$(aws ecs register-task-definition --cli-input-json file://aws/task-def-user-form-app | jq '.taskDefinition.revision')
+                aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --task-definition ${TASK_DEFINITION}:$REVISION_VALUE
+                aws ecs wait services-stable --cluster user-form-app-cluster --services user-form-service
+                '''
             }
         }
 
