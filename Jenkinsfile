@@ -25,11 +25,12 @@ def updateGitRepo() {
 }
 
 def buildBackEndImage() {
-    return '''
+    return """
     cd backend
     docker build -t backend-image:latest .
-
-    '''
+    aws ecr get-login-password | docker login --username AWS --password-stdin ${env.AWS_ECR_REPOSITORY}
+    docker push ${AWS_ECR_REPOSITORY}/${BACKEND_CONTAINER}:latest
+    """
 }
 
 def runDockerCompose() {
@@ -64,7 +65,7 @@ pipeline {
         CLUSTER_NAME = 'user-form-app-cluster'
         SERVICE_NAME = 'Jenkins-App-Service-Prod'
         TASK_DEFINITION = 'LearnJenkinsApp-TaskDefinition-Prod'
-        APP_NAME = 'myjenkinsapp'
+        BACKEND_CONTAINER = 'backend'
     }
 
     options {
@@ -133,22 +134,22 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh """
-                echo 'repo name is: ${env.AWS_ECR_REPOSITORY}'
-                """
-            }
-        }
-
         // stage('Build') {
         //     steps {
         //         sh """
-        //         ${updateGitRepo()}
-        //         ${buildBackEndImage()}
+        //         echo 'repo name is: ${env.AWS_ECR_REPOSITORY}'
         //         """
         //     }
         // }
+
+        stage('Build') {
+            steps {
+                sh """
+                ${updateGitRepo()}
+                ${buildBackEndImage()}
+                """
+            }
+        }
 
 
         // stage('Deploying To EC2 Instance Dockerized') {
