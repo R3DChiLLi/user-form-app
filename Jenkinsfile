@@ -29,9 +29,10 @@ def buildBackEndImage() {
     cd backend
     docker build -t 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo-backend:latest .
     aws ecr get-login-password | docker login --username AWS --password-stdin ${env.AWS_ECR_REPOSITORY}
-    docker push 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo:latest
+    docker push 205930633177.dkr.ecr.us-east-1.amazonaws.com/user-form-app-ecr-repo-backend:latest
     """
 }
+
 
 def buildFrontEndImage() {
     return """
