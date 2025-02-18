@@ -161,11 +161,20 @@ pipeline {
         //     }
         // }
 
-        stage('Changing Nginx Conf to ecs frontend containers IP') {
+        stage('Changing Nginx Conf to ALB DNS') {
+            agent {
+                docker {
+                    image 'my-aws-cli'
+                    args "-u root --entrypoint='' --network=host"
+                    reuseNode true
+                }
+            }
             steps {
-                sh"""
-                ${executeShellScriptForSubstitutingPubIP()}
-                """
+                sh'''
+                cd frontend
+                current_DNS=$(aws elbv2 describe-load-balancers | jq -r '.LoadBalancers[0].DNSName')
+                sed -i "s|###enterALBDNShere###|${current_ip}|g" nginx.conf
+                '''
             }
         }
         stage('Build The Images And Push to ECR') {
