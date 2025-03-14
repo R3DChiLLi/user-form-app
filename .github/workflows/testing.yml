@@ -1,0 +1,15 @@
+name: testing
+on:
+  push: 
+    branches:
+      - main
+jobs:
+  Deploy-Frontend:
+    runs-on: self-hosted
+    environment: prod
+    steps:
+      - name: Outputting github.sha
+        run: |
+          echo "${{ github.sha }}" > release_sha.txt
+        # env:
+        #   RELEASE_SHA: ${{ github.sha }}

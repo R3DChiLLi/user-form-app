@@ -1,8 +1,9 @@
 name: Frontend Deployment on EC2
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   Deploy-Frontend:
@@ -38,7 +39,7 @@ jobs:
         run: |
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
           docker push r3dchilli/frontend-image:release${{ github.sha }}
-          echo "RELEASE_SHA=${{ github.sha }}" > release_sha.txt
+          echo "${{ github.sha }}" > release_sha.txt
         env:
           RELEASE_SHA: ${{ github.sha }}
 
