@@ -41,13 +41,12 @@ jobs:
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
           docker push r3dchilli/frontend-image:release${{ github.sha }}
 
-          # Create and push Git tag
-          git config --global user.name "R3DChiLLi"
-          git config --global user.email "zahankhurram45@gmail.com"
-          git tag -a "release-${{ github.sha }}" -m "Release for commit ${{ github.sha }}"
-          git push origin "release-${{ github.sha }}"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
 
-          # Store release SHA in a file
+          git tag -a "release-${{ github.sha }}" -m "Release for commit ${{ github.sha }}"
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/R3DChiLLi/user-form-app.git "release-${{ github.sha }}"
+
           echo "${{ github.sha }}" > release_sha.txt
 
       - name: Upload Release SHA
