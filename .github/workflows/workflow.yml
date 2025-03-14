@@ -9,6 +9,8 @@ jobs:
   Deploy-Frontend:
     runs-on: self-hosted
     environment: prod
+    env:
+      GH_PATH: ${{ secrets.GH_PAT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
