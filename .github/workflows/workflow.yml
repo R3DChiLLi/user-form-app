@@ -56,6 +56,7 @@ jobs:
 
   Rollback-Frontend:
     runs-on: self-hosted
+    environment: prod
     env:
       BUCKET_NAME: bucket-for-release-versions
     needs: Deploy-Frontend
