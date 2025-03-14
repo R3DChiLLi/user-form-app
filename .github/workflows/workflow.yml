@@ -18,5 +18,8 @@ jobs:
 
       - name: Run Frontend Container
         run: |
-          docker build -t frontend-image:${{ github.sha }} frontend/
-          docker run -d -p 80:80 frontend-image:v1
+          docker stop $(docker ps -a -q)
+          docker rm $(docker ps -a -q)
+          docker build -t r3dchilli/frontend-image:${{ github.sha }} frontend/
+          docker run -d -p 80:80 r3dchilli/frontend-image:${{ github.sha }}
+          docker push r3dchilli/frontend-image:${{ github.sha }}
