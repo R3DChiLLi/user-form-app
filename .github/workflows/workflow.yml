@@ -40,8 +40,6 @@ jobs:
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
           docker push r3dchilli/frontend-image:release${{ github.sha }}
           echo "${{ github.sha }}" > release_sha.txt
-        env:
-          RELEASE_SHA: ${{ github.sha }}
 
       - name: Upload Release SHA
         if: success()
