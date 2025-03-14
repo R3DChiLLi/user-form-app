@@ -1,9 +1,9 @@
 name: Frontend Deployment on EC2
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   Deploy-Frontend:

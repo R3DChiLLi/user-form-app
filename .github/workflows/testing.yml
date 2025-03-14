@@ -7,11 +7,11 @@ on:
 
 jobs:
   download-artifact:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    env:
+      BUCKET_NAME: bucket-for-release-versions
     steps:
-      - name: Download release-sha.txt artifact
-        uses: dawidd6/action-download-artifact@v9
-        with:
-          commit: ${{ github.sha }}   # the commit associated with the tag
-          name: release-sha.txt       # artifact name to download
-          path: ./downloaded         # destination directory
+      - name: uploads to s3 bucket
+        run: |
+          echo "test" > test.txt
+          aws s3 cp test.txt s3://${{ env.BUCKET_NAME }}/test.txt
