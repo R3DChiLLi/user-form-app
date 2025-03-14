@@ -18,5 +18,5 @@ jobs:
 
       - name: Run Frontend Container
         run: |
-          docker build -t frontend-image:v1 frontend/
+          docker build -t frontend-image:${{ github.sha }} frontend/
           docker run -d -p 80:80 frontend-image:v1
