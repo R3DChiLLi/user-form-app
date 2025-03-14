@@ -1,9 +1,9 @@
 name: Frontend Deployment on EC2
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   Deploy-Frontend:
@@ -37,8 +37,17 @@ jobs:
       - name: Tag and Push Release
         if: success()
         run: |
+          # Create and push Docker tag
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
           docker push r3dchilli/frontend-image:release${{ github.sha }}
+
+          # Create and push Git tag
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git tag -a "release-${{ github.sha }}" -m "Release for commit ${{ github.sha }}"
+          git push origin "release-${{ github.sha }}"
+
+          # Store release SHA in a file
           echo "${{ github.sha }}" > release_sha.txt
 
       - name: Upload Release SHA
@@ -47,6 +56,7 @@ jobs:
         with:
           name: release-sha
           path: release_sha.txt
+
 
   Rollback-Frontend:
     runs-on: self-hosted
