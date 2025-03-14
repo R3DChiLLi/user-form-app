@@ -1,16 +1,18 @@
 name: Frontend Deployment on EC2
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   Deploy-Frontend:
     runs-on: self-hosted
+      
     environment: prod
     env:
       GH_PATH: ${{ secrets.GH_PAT }}
+      BUCKET_NAME: bucket-for-release-versions
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -42,14 +44,8 @@ jobs:
           # Create and push Docker tag
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
           docker push r3dchilli/frontend-image:release${{ github.sha }}
-
-          git config --global user.name "r3dchilli"
-          git config --global user.email "zahankhurram45@gmail.com"
-
-          git tag -a "release-${{ github.sha }}" -m "Release for commit ${{ github.sha }}"
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/R3DChiLLi/user-form-app.git "release-${{ github.sha }}"
-
           echo "${{ github.sha }}" > release_sha.txt
+          aws s3 cp release_sha.txt s3://${{ env.BUCKET_NAME }}/release_sha.txt
 
       - name: Upload Release SHA
         if: success()
