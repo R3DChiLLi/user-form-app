@@ -1,9 +1,9 @@
 name: Frontend Deployment on EC2
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
 
 jobs:
   Deploy-Frontend:
@@ -45,7 +45,7 @@ jobs:
 
       - name: Upload Release SHA
         if: success()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-sha
           path: release_sha.txt
@@ -56,7 +56,7 @@ jobs:
     if: failure()
     steps:
       - name: Download Release SHA
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: release-sha
           path: .
