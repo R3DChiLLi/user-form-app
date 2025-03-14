@@ -37,7 +37,7 @@ jobs:
         if: success()
         run: |
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
-          docker push r3dchilli/frontend-image:release$${{ github.sha }}
+          docker push r3dchilli/frontend-image:release${{ github.sha }}
 
   Rollback-Frontend:
     runs-on: self-hosted
