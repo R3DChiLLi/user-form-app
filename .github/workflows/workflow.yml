@@ -57,4 +57,4 @@ jobs:
             docker rm $(docker ps -a -q)
           fi
           docker pull r3dchilli/frontend-image:release
-          docker run -d -p 80:80 r3dchilli/frontend-image:release
+          docker run -d -p 80:80 r3dchilli/frontend-image:release 
