@@ -44,7 +44,7 @@ jobs:
           docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
           docker push r3dchilli/frontend-image:release${{ github.sha }}
           echo "${{ github.sha }}" > release_sha-prod.txt
-          aws s3 cp release_sha.txt s3://${{ env.BUCKET_NAME }}/release_sha-prod.txt
+          aws s3 cp release_sha-prod.txt s3://${{ env.BUCKET_NAME }}/release_sha-prod.txt
 
       # - name: Upload Release SHA
       #   if: success()
