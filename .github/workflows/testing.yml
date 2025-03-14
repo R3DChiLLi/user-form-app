@@ -11,5 +11,9 @@ jobs:
       - name: Outputting github.sha
         run: |
           echo "${{ github.sha }}" > release_sha.txt
-        # env:
-        #   RELEASE_SHA: ${{ github.sha }}
+      - name: Upload Release SHA
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-sha
+          path: release_sha.txt
