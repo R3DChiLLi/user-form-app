@@ -74,7 +74,7 @@ jobs:
 
       - name: Run Previous Release Frontend Container
         run: |
-          RELEASE_SHA=$(cat release_sha.txt)
+          RELEASE_SHA=$(cat release_sha-prod.txt)
           if [ $(docker ps -a -q) ]; then
             docker stop $(docker ps -a -q)
             docker rm $(docker ps -a -q)
