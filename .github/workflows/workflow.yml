@@ -1,0 +1,22 @@
+name: Frontend Deployment on EC2
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy-Frontend:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Runs Custom Script
+        run: |
+          chmod 700 frontend/change-pub-ip.sh
+          ./frontend/change-pub-ip.sh
+
+      - name: Run Frontend Container
+        run: |
+          docker build -t frontend-image:v1 frontend/
+          docker run -d -p 80:80 frontend-image:v1
