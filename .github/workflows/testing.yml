@@ -15,8 +15,8 @@ jobs:
           RELEASE_SHA=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/actions/artifacts \
-            | jq -r '.artifacts[] | select(.name=="release-sha") | .workflow_run.head_sha')
-          echo "RELEASE_SHA={}" >> $GITHUB_OUTPUT
+            | jq -r '.artifacts[] | select(.name=="release-sha") | .workflow_run.head_sha') | echo "RELEASE_SHA={}" >> $GITHUB_OUTPUT
+          
   Output-Release-SHA:
     runs-on: self-hosted
     needs: Rollback-Frontend
