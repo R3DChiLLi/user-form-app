@@ -6,8 +6,6 @@ on:
 jobs:
   Rollback-Frontend:
     runs-on: self-hosted
-    needs: Deploy-Frontend
-    if: failure()
     steps:
       - name: Find Commit with Release SHA
         id: find-commit
