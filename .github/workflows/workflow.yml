@@ -61,10 +61,8 @@ jobs:
     if: failure()
     steps:
       - name: Download Release SHA
-        uses: actions/download-artifact@v4
-        with:
-          name: release-sha
-          path: .
+        run: |
+          aws s3 cp s3://${{ env.BUCKET_NAME }}/release_sha.txt release_sha.txt
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
