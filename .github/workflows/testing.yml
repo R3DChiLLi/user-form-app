@@ -4,16 +4,16 @@ on:
     branches:
       - main
 jobs:
-  Deploy-Frontend:
+  Rollback-Frontend:
     runs-on: self-hosted
-    environment: prod
+    needs: Deploy-Frontend
+    if: failure()
     steps:
-      - name: Outputting github.sha
+      - name: Find Commit with Release SHA
+        id: find-commit
         run: |
-          echo "${{ github.sha }}" > release_sha.txt
-      - name: Upload Release SHA
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-sha
-          path: release_sha.txt
+          RELEASE_SHA=$(curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts \
+            | jq -r '.artifacts[] | select(.name=="release-sha") | .workflow_run.head_sha')
+          echo "RELEASE_SHA=$RELEASE_SHA" >> $GITHUB_ENV
