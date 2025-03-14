@@ -31,7 +31,7 @@ jobs:
           fi
           docker build -t r3dchilli/frontend-image:${{ github.sha }} frontend/
           docker run -d -p 80:80 r3dchilli/frontend-image:${{ github.sha }}
-          docker push r3dchilli/frontend-image:${{ github.sha }}
+#docker push r3dchilli/frontend-image:${{ github.sha }}
 
       - name: Tag and Push Release
         if: success()
