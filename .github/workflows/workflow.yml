@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: Download Release SHA
         run: |
-          aws s3 cp s3://${{ env.BUCKET_NAME }}/release_sha.txt
+          aws s3 cp s3://${{ env.BUCKET_NAME }}/release_sha.txt release_sha.txt
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
