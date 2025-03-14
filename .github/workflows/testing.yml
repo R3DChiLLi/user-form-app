@@ -14,4 +14,4 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/actions/artifacts \
             | jq -r '.artifacts[] | select(.name=="release-sha") | .workflow_run.head_sha')
-          echo "RELEASE_SHA=$RELEASE_SHA" >> $GITHUB_ENV
+          echo "RELEASE_SHA=$RELEASE_SHA" >> $GITHUB_OUTPUT
