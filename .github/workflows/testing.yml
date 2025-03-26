@@ -1,8 +1,84 @@
-# name: Check path based trigger
-# on:
-#   workflow_dispatch:
-#   push:
-#     branches:
-#       - main
-#     paths:
-#       - 'frontend/**'
+name: Backend Deployment on EC2
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+jobs:
+  Deploy-Frontend:
+    runs-on: self-hosted
+      
+    environment: prod
+    env:
+      BUCKET_NAME: bucket-for-release-versions
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Runs Custom Script
+        run: |
+          chmod 700 frontend/change-pub-ip.sh
+          ./frontend/change-pub-ip.sh
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Run Frontend Container
+        run: |
+          if [ $(docker ps -a -q) ]; then
+            docker stop $(docker ps -a -q)
+            docker rm $(docker ps -a -q)
+          fi
+          docker build -t r3dchilli/frontend-image:${{ github.sha }} frontend/
+          docker run -d -p 80:80 r3dchilli/frontend-image:${{ github.sha }}
+          docker push r3dchilli/frontend-image:${{ github.sha }}
+
+      - name: Tag and Push Release
+        if: success()
+        run: |
+          # Create and push Docker tag
+          docker tag r3dchilli/frontend-image:${{ github.sha }} r3dchilli/frontend-image:release${{ github.sha }}
+          docker push r3dchilli/frontend-image:release${{ github.sha }}
+          echo "${{ github.sha }}" > release_sha-prod.txt
+          aws s3 cp release_sha-prod.txt s3://${{ env.BUCKET_NAME }}/release_sha-prod.txt
+
+      # - name: Upload Release SHA
+      #   if: success()
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: release-sha
+      #     path: release_sha.txt
+
+
+  Rollback-Frontend:
+    runs-on: self-hosted
+    environment: prod
+    env:
+      BUCKET_NAME: bucket-for-release-versions
+    needs: Deploy-Frontend
+    if: failure()
+    steps:
+      - name: Download Release SHA
+        run: |
+          aws s3 cp s3://${{ env.BUCKET_NAME }}/release_sha-prod.txt release_sha-prod.txt
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Run Previous Release Frontend Container
+        run: |
+          RELEASE_SHA=$(cat release_sha-prod.txt)
+          if [ $(docker ps -a -q) ]; then
+            docker stop $(docker ps -a -q)
+            docker rm $(docker ps -a -q)
+          fi
+          docker pull r3dchilli/frontend-image:release${RELEASE_SHA}
+          docker run -d -p 80:80 r3dchilli/frontend-image:release${RELEASE_SHA}
