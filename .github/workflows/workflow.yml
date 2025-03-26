@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-
+    paths:
+      - 'frontend/**'
 jobs:
   Deploy-Frontend:
     runs-on: self-hosted
