@@ -6,7 +6,7 @@ services:
       context: ./backend
     container_name: backend
     ports:
-      - "3000:3000"
+      - "3005:3000"
     networks:
       - custom_network  # Connect to the custom network
 
